@@ -30,6 +30,7 @@
  *         description: GET All products Has Failed 
  *  
  */
+//@Add Product
 /**
  * @swagger
  * 
@@ -63,11 +64,12 @@
  *              properties:
  *                productName:
  *                  type: string
+ * 
  *                cost:
  *                  type: number
+ * 
  *                amountAvailable:
  *                  type: number
- *                  required: true
  * 
  *     responses:
  *       "200":
