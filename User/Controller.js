@@ -8,7 +8,8 @@ const bcrypt = require("bcrypt");
 const validateJWTSecret = require("../Middleware/validateJWTSecretKey");
 //Refresh token
 const refreshToken = require("../Middleware/refreshToken");
-
+//Swagger Yaml
+require("./yaml");
 //@GET
 router.get('',validateJWTSecret,async(req,res)=>{
     try{
@@ -31,7 +32,7 @@ router.get('',validateJWTSecret,async(req,res)=>{
      });
   }
 });
-
+//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2VlMjkwNWQxOWQxNTU2MjRiYWI2OTUiLCJ1c2VybmFtZSI6ImxhcCIsImRlcG9zaXQiOjAsInByb2R1Y3RzUHVyY2hhc2VkIjpbXSwiY29ubmVjdGVkIjp0cnVlLCJyb2xlIjoiYnV5ZXIiLCJpYXQiOjE2NzY1NTI1MTksImV4cCI6MTY3NjU3MDUxOX0.wdEy6sMlfAjfV07w0yIVEZTPPO-yEA3C0IDjZ244C9k
 //@DELETE
 router.delete('/:id',validateJWTSecret,async (req, res) => {
     try{
@@ -60,7 +61,7 @@ router.delete('/:id',validateJWTSecret,async (req, res) => {
 router.put('',validateJWTSecret,async (req, res)=>{
     try{
       const {_id} = req.headers.authorization
-        const _user =  USER.findByIdAndUpdate(_id,req.body,{new:true}).then(async(user)=>{
+        const _user =  USER.findByIdAndUpdate(_id,req.body.username == "" ? { $set:{role:req.body.role}}: req.body.role == "" ? { $set:{username:req.body.username}} : req.body,{new:true}).then(async(user)=>{
            const newUser = await refreshToken(user).then((token)=>{
             return res.status(200).json({
               message: "Update User Successfully",

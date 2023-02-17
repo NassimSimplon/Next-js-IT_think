@@ -8,6 +8,8 @@ const USER = require('../User/Model')
 const validateJWTSecret = require("../Middleware/validateJWTSecretKey")
 //refresh token
 const refreshToken = require("../Middleware/refreshToken");
+//Swagger Yaml
+require("./yaml");
 //Allowed Deposits
 const ALLOWED_DEPOSITS = [100 ,50 , 20, 10, 5 ];
 
@@ -17,12 +19,9 @@ async function verifyRoleAndTheOwner(req, res, next) {
     const {_id ,role} = req.headers.authorization
 try{
   const owner  = await PRODUCT.findById(req.params.productID)
- if((req.method == 'POST' &&  role === "seller") || (owner.sellerld ==  _id && role === "seller") ){
+ if((req.method == 'POST' &&  role === "seller") || ( owner.sellerld ==  _id && role === "seller") ){
     return await next();
  }  
-  return res.status(400).json({
-    message: "Somthing went wrong when trying to verify role"
-  }) 
 } 
 catch(err){
   return res.status(400).json({
@@ -58,14 +57,16 @@ router.get('',validateJWTSecret,async(req,res)=>{
 //@POST
 router.post('',validateJWTSecret,verifyRoleAndTheOwner,async(req,res)=>{
     try{
+      const {_id} = req.headers.authorization
+      const sellerld = _id
      //KEYS
-     const { productName ,cost, amountAvailable ,sellerld} = req?.body;
+     const { productName ,cost, amountAvailable } = req?.body;
 
      const _product = new PRODUCT({
       productName, 
       cost,
       amountAvailable,
-      sellerld 
+      sellerld
      });
 
     const newUser =   _product.save((error, product) => {
@@ -129,7 +130,12 @@ router.delete('/:productID',validateJWTSecret,verifyRoleAndTheOwner,async (req, 
 //@PUT
 router.put('/:productID',validateJWTSecret,verifyRoleAndTheOwner,async (req, res)=>{
     try{
-        const _product =  PRODUCT.findByIdAndUpdate(req.params.productID,req.body,{new:true}).then((response)=>{
+        const _product =  PRODUCT.findByIdAndUpdate(req.params.productID,
+          req.body.productName == "" ? { $set:{cost:req.body.cost ,amountAvailable:req.body.amountAvailable}}  :
+          req.body.cost == 0 ? { $set:{productName:req.body.productName ,amountAvailable:req.body.amountAvailable}} :
+          req.body.amountAvailable == 0 ? { $set:{productName:req.body.productName ,cost:req.body.cost}} :
+          req.body
+          ,{new:true}).then((response)=>{
             return res.status(200).json({
                 message: "UPDATE Product Successfully",
                 product:response
@@ -157,18 +163,18 @@ router.put('/buy/:productID/:amountOfProducts', validateJWTSecret, async (req, r
   const user =  await USER.findById(_id);
   //Check
   if (user.role == 'seller') {
-    return res.status(402).json('Only User With Role buyer can Buy  Products');
+    return res.status(400).json('Only User With Role buyer can Buy  Products');
   }
   if (product.amountAvailable < amount  ) {
-    return res.status(403).json(`Product Amount Available : ${product.amountAvailable}`);
+    return res.status(401).json(`Product Amount Available : ${product.amountAvailable}`);
   }
   if (product.amountAvailable <= 0) {
-    return res.status(404).json(`No More Product Available`);
+    return res.status(402).json(`No More Product Available`);
   }
  //Total Coat
   const totalCost = product.cost * amount;
   if (totalCost > user.deposit) {
-    return res.status(400).send('Insufficient funds, deposit more coins and try again');
+    return res.status(403).json('Insufficient funds, deposit more coins and try again');
   }
     //check product  is exist in Product Purchased
     const isProductExist = user.productsPurchased.filter(x=> x._id == product._id);
@@ -194,6 +200,7 @@ const result =  await Promise.all([
 
   //Response 
  return  res.status(200).json({
+   message:"Buying Product Successfully",
    totalSpent: totalCost,
    deposit: user.deposit - totalCost ,
    coinsLeft: coinsLeft,

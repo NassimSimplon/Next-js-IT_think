@@ -21,5 +21,5 @@ module.exports = mongoose.model('products',new Schema({
     sellerld:{
         type:String,
         required:true
-    }
+    } 
 }));
