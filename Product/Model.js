@@ -8,12 +8,12 @@ module.exports = mongoose.model('products',new Schema({
         type:String,
         required:true
     },
-    cost:{
+    amountAvailable:{
         type:Number,
         required:true,
         default:0
     },
-    amountAvailable:{
+    cost:{
         type:Number,
         required:true,
         default:0

@@ -60,12 +60,12 @@ router.post('',validateJWTSecret,verifyRoleAndTheOwner,async(req,res)=>{
       const {_id} = req.headers.authorization
       const sellerld = _id
      //KEYS
-     const { productName ,cost, amountAvailable } = req?.body;
+     const { productName , amountAvailable ,cost} = req?.body;
 
      const _product = new PRODUCT({
       productName, 
-      cost,
       amountAvailable,
+      cost,
       sellerld
      });
 
