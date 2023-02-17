@@ -130,11 +130,12 @@ router.delete('/:productID',validateJWTSecret,verifyRoleAndTheOwner,async (req, 
 //@PUT
 router.put('/:productID',validateJWTSecret,verifyRoleAndTheOwner,async (req, res)=>{
     try{
+      const existProduct = await PRODUCT.findById(req.params.productID)
         const _product =  PRODUCT.findByIdAndUpdate(req.params.productID,
-          req.body.productName == "string" ? { $set:{cost:req.body.cost ,amountAvailable:req.body.amountAvailable}}  :
-          req.body.cost == 0 ? { $set:{productName:req.body.productName ,amountAvailable:req.body.amountAvailable}} :
-          req.body.amountAvailable == 0 ? { $set:{productName:req.body.productName ,cost:req.body.cost}} :
-          req.body
+          {productName: req.body.productName !== existProduct.productName || req.body.productName  !== "string" ? req.body.productName : null ,
+          cost: req.body.cost !== existProduct.cost || req.body.cost  !== 0 ? req.body.cost : null,
+          amountAvailable: req.body.amountAvailable !== existProduct.amountAvailable || req.body.amountAvailable  !== 0 ? req.body.amountAvailable : null}
+        
           ,{new:true}).then((response)=>{
             return res.status(200).json({
                 message: "UPDATE Product Successfully",
