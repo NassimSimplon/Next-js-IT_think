@@ -135,7 +135,7 @@
  *   put:
  *     tags:
  *       - User
- *     summary: User Can Only Change his Deposit amount
+ *     summary: Only Users With Role Buyer can Add Deposit
  *     security:
  *        - bearerAuth: []
  *     requestBody:
