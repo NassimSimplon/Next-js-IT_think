@@ -63,14 +63,12 @@
  *              type: object
  *              properties:
  *                productName:
- *                  type: string
- * 
- *                cost:
- *                  type: number
- * 
+ *                  type: string 
  *                amountAvailable:
  *                  type: number
- * 
+ *                cost:
+ *                  type: number
+  
  *     responses:
  *       "200":
  *         description: POST Product Successfully
