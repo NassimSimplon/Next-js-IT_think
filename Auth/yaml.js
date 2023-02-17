@@ -26,13 +26,11 @@
  *       "400":
  *         description: Bad request
  * 
- 
  *
  */
-/**  
- *
- * @Swagger
- *     
+
+/**
+ * @swagger
  * /auth/login:
  *   post:
  *     tags: 
@@ -56,8 +54,9 @@
  *         description: Successfully logged in
  *       "400":
  *         description: Unauthorized
- * 
- **/
+ *
+ */
+
 /**
  * @swagger
  * 
