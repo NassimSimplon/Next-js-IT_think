@@ -131,7 +131,7 @@ router.delete('/:productID',validateJWTSecret,verifyRoleAndTheOwner,async (req, 
 router.put('/:productID',validateJWTSecret,verifyRoleAndTheOwner,async (req, res)=>{
     try{
         const _product =  PRODUCT.findByIdAndUpdate(req.params.productID,
-          req.body.productName == "" ? { $set:{cost:req.body.cost ,amountAvailable:req.body.amountAvailable}}  :
+          req.body.productName == "string" ? { $set:{cost:req.body.cost ,amountAvailable:req.body.amountAvailable}}  :
           req.body.cost == 0 ? { $set:{productName:req.body.productName ,amountAvailable:req.body.amountAvailable}} :
           req.body.amountAvailable == 0 ? { $set:{productName:req.body.productName ,cost:req.body.cost}} :
           req.body
